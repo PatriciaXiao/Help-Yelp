@@ -34,9 +34,12 @@ class IO:
         return valid_x, valid_y
     def load_test(self, test_file="test_queries.csv"):
         return self.load_file(test_file)
-    def write_file(self, dataframe, outfile_name):
+    def write_file(self, dataframe_content, outfile_name):
         outfile_path = os.path.join(self.out_directory, outfile_name)
-        dataframe.to_csv(outfile_path)
+        data_length = len(dataframe_content)
+        dataframe = pd.DataFrame(data=dataframe_content, index=range(data_length), columns=["stars"])
+        dataframe['index'] = dataframe.index
+        dataframe.to_csv(outfile_path, index=None, columns=["index", "stars"])
 
     def load_users_stars(self, user_file = "users.csv"):
         users = self.load_users(user_file = "users.csv")

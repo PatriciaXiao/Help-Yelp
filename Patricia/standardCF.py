@@ -38,6 +38,7 @@ class CF:
         self.n_valid = len(valid_x)
 
         self.test = self.IOtools.load_test()
+        self.n_test = len(self.test)
 
         non_zero_scores_x, non_zero_scores_y = self.data.nonzero()
         self.data_nonzero = csr_matrix((np.ones(len(non_zero_scores_x)), (non_zero_scores_x, non_zero_scores_y)), shape=(self.n_users, self.n_business))
@@ -52,17 +53,7 @@ class CF:
         self.similarity = csr_matrix(similarity)
         # print self.similarity
         # print self.similarity.transpose()
-    def prediction(self):
-        pass
-        '''
-        self.predict = self.data.dot(self.similarity)
-        self.normalizer = np.sum(self.similarity, axis=1)
-        self.normalizer = [n if n else 1.0 for n in self.normalizer]
-        # self.predict = self.predict.todense() / normalizer
-        print np.max(self.predict)
-        print np.max(self.similarity)
-        print np.max(self.data)
-        '''
+    
     def to_array(self, mat_1d):
         return np.asarray(mat_1d).reshape(-1)
     def predict_single(self, uidx, bidx):
@@ -89,15 +80,26 @@ class CF:
         # print self.valid_y
         # print max(self.valid_pred)
         self.valid_score = self.IOtools.evaluate(self.valid_pred, self.valid_y)
-        print self.valid_score
+        print("RMSE score on validation set: {0}".format(self.valid_score))
+
+    def prediction(self):
+        test_users = [self.u_idx_mapping[uid]for uid in self.test["user_id"]]
+        test_bussiness = [self.b_idx_mapping[bid] for bid in self.test["business_id"]]
+        self.test_pred = [self.predict_single(test_users[i], test_bussiness[i]) for i in range(self.n_test)]
+        self.IOtools.write_file(self.test_pred, "standardCF.csv")
 
 
 
+print("building the model")
 model = CF()
+print("loading data")
 model.load_data()
+print("computing similarity")
 model.similarity()
-model.prediction()
+print("running on validation set")
 model.validate()
+print("getting test result")
+model.prediction()
 
 
 
