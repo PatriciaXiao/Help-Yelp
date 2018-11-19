@@ -6,6 +6,7 @@
 import pandas as pd
 import os
 import numpy as np
+from math import *
 
 class IO:
     def __init__(self, data_directory="./", out_directory="./"):
@@ -37,7 +38,12 @@ class IO:
         outfile_path = os.path.join(self.out_directory, outfile_name)
         dataframe.to_csv(outfile_path)
 
-    def evaluate(self, y_true, y_pred): # the l_2 difference
-        diff = y_true - y_pred
-        print(diff)
-        return np.dot(diff.T, diff) / float(len(y_true))
+    def load_users_stars(self, user_file = "users.csv"):
+        users = self.load_users(user_file = "users.csv")
+        return users["user_id"].tolist(), users["average_stars"].tolist()
+
+
+    def evaluate(self, y_true, y_pred): # ???
+        diff = [y_true[i] - y_pred[i] for i in range(len(y_true))]
+        # print diff
+        return sqrt(np.dot(diff, diff) / float(len(y_true)))

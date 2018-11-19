@@ -34,30 +34,62 @@ class CF:
 
         valid_x, valid_y = self.IOtools.load_valid()
         self.valid_x = valid_x
-        self.valid_y = np.array(valid_y)
+        self.valid_y = valid_y.tolist()
         self.n_valid = len(valid_x)
 
         self.test = self.IOtools.load_test()
 
+        non_zero_scores_x, non_zero_scores_y = self.data.nonzero()
+        self.data_nonzero = csr_matrix((np.ones(len(non_zero_scores_x)), (non_zero_scores_x, non_zero_scores_y)), shape=(self.n_users, self.n_business))
+
+        user_id, user_star = self.IOtools.load_users_stars()
+        self.user_avgstars = {self.u_idx_mapping[ user_id[i] ]: user_star[ i ] for i in range(len(user_id))}
+
+
     def similarity(self):
-        similarity = cosine_similarity(self.data.transpose(), self.data.transpose()) # item level similarity
+        similarity = cosine_similarity(self.data.transpose()) # item level similarity
         # print len(similarity)
         self.similarity = csr_matrix(similarity)
         # print self.similarity
         # print self.similarity.transpose()
     def prediction(self):
+        pass
+        '''
         self.predict = self.data.dot(self.similarity)
         self.normalizer = np.sum(self.similarity, axis=1)
         self.normalizer = [n if n else 1.0 for n in self.normalizer]
         # self.predict = self.predict.todense() / normalizer
-        # print np.max(self.predict)
+        print np.max(self.predict)
+        print np.max(self.similarity)
+        print np.max(self.data)
+        '''
+    def to_array(self, mat_1d):
+        return np.asarray(mat_1d).reshape(-1)
+    def predict_single(self, uidx, bidx):
+        # print self.data[uidx, :].shape
+        # print self.similarity[bidx, :].shape #[0, 1] range
+        # b_similarity = self.similarity[bidx, :].toarray()
+        b_similarity = self.to_array(self.similarity[bidx, :].toarray())
+        u_score = self.to_array(self.data[uidx, :].toarray())
+        u_nonzero = self.to_array(self.data_nonzero[uidx, :].toarray())
+        sum_score = np.sum(np.dot(b_similarity, u_score))
+        sum_norm = np.sum(np.dot(b_similarity, u_nonzero))
+        if sum_norm: # then sum_score > 0
+            pred = sum_score / sum_norm
+        else:
+            # sum_norm = 0
+            # no user record on the similar items
+            pred = self.user_avgstars[uidx]
+        return pred
 
     def validate(self):
         valid_users = [self.u_idx_mapping[uid]for uid in self.valid_x["user_id"]]
         valid_bussiness = [self.b_idx_mapping[bid] for bid in self.valid_x["business_id"]]
-        self.valid_pred = np.array([self.predict[valid_users[i], valid_bussiness[i]] / self.normalizer[valid_bussiness[i]] for i in range(self.n_valid)])
-        self.valid_score = self.IOtools.evaluate(np.array(self.valid_pred), np.array(self.valid_y))
-        print self.valid_score[0][0]
+        self.valid_pred = [self.predict_single(valid_users[i], valid_bussiness[i]) for i in range(self.n_valid)]
+        # print self.valid_y
+        # print max(self.valid_pred)
+        self.valid_score = self.IOtools.evaluate(self.valid_pred, self.valid_y)
+        print self.valid_score
 
 
 
