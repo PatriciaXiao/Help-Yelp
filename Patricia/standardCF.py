@@ -49,10 +49,7 @@ class CF:
 
     def similarity(self):
         similarity = cosine_similarity(self.data.transpose()) # item level similarity
-        # print len(similarity)
         self.similarity = csr_matrix(similarity)
-        # print self.similarity
-        # print self.similarity.transpose()
     
     def to_array(self, mat_1d):
         return np.asarray(mat_1d).reshape(-1)
