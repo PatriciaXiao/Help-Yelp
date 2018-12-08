@@ -1,0 +1,6 @@
+building the model
+loading data
+computing similarity
+running on validation set
+RMSE score on validation set: 1.19605273168
+getting test result
