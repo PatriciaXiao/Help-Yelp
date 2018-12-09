@@ -32,6 +32,13 @@ class CF:
         bidx_list = [self.b_idx_mapping[bid] for bid in bid_list]
         self.data = csr_matrix((label_list, (uidx_list, bidx_list)), shape=(self.n_users, self.n_business))
 
+        ########
+        self.train_users = uidx_list
+        self.train_bussiness = bidx_list
+        self.train_labels = label_list
+        self.n_train = len(label_list)
+        ########
+
         valid_x, valid_y = self.IOtools.load_valid()
         self.valid_x = valid_x
         self.valid_y = valid_y.tolist()
@@ -70,6 +77,11 @@ class CF:
             pred = self.user_avgstars[uidx]
         return pred
 
+    def train_RSME(self):
+        train_pred = [self.predict_single(self.train_users[i], self.train_bussiness[i]) for i in range(self.n_train)]
+        train_score = self.IOtools.evaluate(train_pred, self.train_labels)
+        print("RMSE score on training set: {0}".format(train_score))
+
     def validate(self):
         valid_users = [self.u_idx_mapping[uid]for uid in self.valid_x["user_id"]]
         valid_bussiness = [self.b_idx_mapping[bid] for bid in self.valid_x["business_id"]]
@@ -93,6 +105,8 @@ print("loading data")
 model.load_data()
 print("computing similarity")
 model.similarity()
+print("running on training set")
+model.train_RSME()
 print("running on validation set")
 model.validate()
 print("getting test result")
