@@ -19,6 +19,7 @@ class CF:
         self.IOtools = IO(data_directory=DATA_DIR)
         self.valid_pred = None
         self.predict = None
+        self.predict_single = None
     def load_data(self):
         self.users = self.IOtools.load_users().user_id.unique() # len: 41720 # numpy ndarray
         self.business = self.IOtools.load_business().business_id.unique() # len: 12058
@@ -60,7 +61,7 @@ class CF:
     
     def to_array(self, mat_1d):
         return np.asarray(mat_1d).reshape(-1)
-    def predict_single(self, uidx, bidx):
+    def predict_single1(self, uidx, bidx):
         # print self.data[uidx, :].shape
         # print self.similarity[bidx, :].shape #[0, 1] range
         # b_similarity = self.similarity[bidx, :].toarray()
@@ -99,11 +100,12 @@ class CF:
 
 
 
-print("building the model")
+print("building the item-based model")
 model = CF()
 print("loading data")
 model.load_data()
 print("computing similarity")
+model.predict_single = model.predict_single1 # model.predict_single1
 model.similarity()
 print("running on training set")
 model.train_RSME()
