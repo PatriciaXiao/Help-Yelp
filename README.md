@@ -7,5 +7,5 @@ CS 145 course project
 
 ## Project Report
 
-* [midterm report](https://www.overleaf.com/1469357223nvppvyyjpxrx)
+* [midterm report](./files/yelp_midterm_report.pdf)
 * final report
