@@ -1,5 +1,5 @@
 # Help-Yelp
-CS 145 course project
+[CS 145](http://web.cs.ucla.edu/~yzsun/classes/2018Fall_CS145/schedule.html) course project
 
 ## Project Submission
 
