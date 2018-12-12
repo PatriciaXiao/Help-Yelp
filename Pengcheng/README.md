@@ -6,7 +6,7 @@
 
 4. lr.ipynb implements linear regression, which returns concentrated distribution of predictions in interval [3.6, 3.9].
 
-5. svd.ipynb implements SVD for collaborative filtering according to literature. It seems that there are some problems in coding and the output is not very appealing.
+5. svd.ipynb implements SVD for collaborative filtering according to literature. It seems that there are some problems in coding, so the time and space cost is high (need mataining a large matrix) and the output results are not very appealing.
 
 Refs:
 1. https://gist.github.com/henryachen/a5fb0281c1715e83aaef
