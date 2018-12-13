@@ -19,4 +19,4 @@ EMANON
 ## Project Report
 
 * [midterm report](./files/yelp_midterm_report.pdf)
-* final report
+* [final report](./files/CS145_final_report.pdf)
